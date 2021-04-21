@@ -1,0 +1,21 @@
+{
+  "name": "@rx-irc/client",
+  "description": "A Node.js IRC client based on RxJS streams.",
+  "version": "0.0.0",
+  "license": "MIT",
+  "author": "Florian Mäder <florian@maederbiel.ch>",
+  "homepage": "https://github.com/rx-irc/client",
+  "repository": "rx-irc/client",
+  "main": "lib/client.js",
+  "dependencies": {
+    "assert": "^1.4.1",
+    "irc-message": "^3.0.2",
+    "irc-replies": "^2.0.1",
+    "lodash": "^4.17.11",
+    "rxjs": "^6.3.3",
+    "rxjs-stream": "^3.0.1",
+    "saslprep": "^1.0.2",
+    "split2": "^3.0.0",
+    "winston": "^3.1.0"
+  }
+}
