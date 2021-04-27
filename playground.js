@@ -1,47 +1,72 @@
 // Local Dependencies
 const Client = require('./lib/client');
+const logger = require('./lib/logger');
 
-let options = {
-	host: 'irc.freenode.net',
-	nick: 'rxbot',
+let client = new Client({
+	host: 'irc.div0.ch',
+	port: 6697,
+	ssl: true,
+	rejectUnauthorized: true,
 
-	saslMechanism: 'plain',
-	saslPassword: 'secret',
+	nick: 'bot',
+	username: 'rxbot',
 
-	logLevel: 'silly',
-};
+	// saslMechanism: 'plain',
+	// saslPassword: 'secret',
+});
 
-let client = new Client(options);
+client.connect(function () {
+	this.actionOut$.next({
+		command: 'JOIN',
+		channels: ['#home', '#rxbot'],
+	});
 
-client.connect().then(() => {
-
-	client.privmsg$.subscribe(({ sender, target, text }) => {
-		client.logger.debug(`S: PRIVMSG ${sender} ${target} :${text}`);
-
-		if (text === 'json') {
-			console.log(client.store.json());
-		} else if (text === 'ctcp') {
-			client.rawOut$.next(`PRIVMSG ${sender} :\x01VERSION\x01`);
+	this.join$.subscribe(({ channel }) => {
+		if (channel === '#rxbot') {
+			this.actionOut$.next({
+				command: 'PRIVMSG',
+				target: channel,
+				text: ['First line', 'Second line', 'Third line'],
+				prefix: 'Test:',
+			});
 		}
 	});
 
-	client.notice$.subscribe(({ sender, target, text }) => {
-		client.logger.debug(`S: NOTICE ${sender} ${target} :${text}`);
+	this.messageIn$.subscribe(message => {
+		logger.debug(JSON.stringify(message, null, 2));
 	});
 
-	client.pong$.subscribe(({ id }) => {
-		client.logger.debug(`S: PONG ${id}`);
+	this.privmsg$.subscribe(({ sender, target, text }) => {
+		logger.log(`S: PRIVMSG ${sender} ${target} :${text}`);
+
+		if (text === 'json') {
+			console.log(this.store.json());
+		} else if (text === 'ctcp') {
+			this.actionOut$.next({
+				command: 'CTCP',
+				message: 'VERSION',
+				nick: sender,
+			});
+		}
 	});
 
-	client.who$.subscribe(({ channel, users }) => {
-		let strings = users.map(user => `${user.nick}!${user.username}@${user.host} (${user.server}) ${user.realname}`);
-		client.logger.debug(`S: WHO ${channel} ${JSON.stringify(strings)}`);
+	this.notice$.subscribe(({ sender, target, text }) => {
+		logger.log(`S: NOTICE ${sender} ${target} :${text}`);
 	});
 
-	client.messageIn$.subscribe(message => {
-		client.logger.silly(JSON.stringify(message, null, 2));
+	this.pong$.subscribe(({ id }) => {
+		logger.log(`S: PONG ${id}`);
 	});
 
-}).catch(error => {
-	client.logger.error(error);
+	this.who$.subscribe(({ channel, users }) => {
+		let template = '{nick}!{username}@{host} ({server}) {realname}';
+		let strings = users.map(user => template
+			.replace('{nick}', user.nick)
+			.replace('{username}', user.username)
+			.replace('{host}', user.host)
+			.replace('{server}', user.server)
+			.replace('{realname}', user.realname)
+		);
+		logger.log(`S: WHO ${channel} ${JSON.stringify(strings)}`);
+	});
 });
