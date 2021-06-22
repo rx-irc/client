@@ -1,43 +1,7 @@
 let store = {
-	server: {
-		// TLS
-		encrypted: bool,
-		authorized: bool,
-		authorizationError: string,
-		peerCertificate: string,
-		cypher: object,
-		ephemeral: object,
-		protocol: string,
-		remoteFamily: number,
-		remoteAddress: string,
-		remotePort: number,
-
-		// IRC
-		motd: string[],
-		nickLength: number,
-		topicLength: number,
-
-		channelPrefixes: string[],
-		channelLimit: number,
-		channelModes: string[],
-		channelLength: number,
-
-		stats: {
-			totalServers: number,
-			totalVisibleUsers: number,
-			totalInvisibleUsers: number,
-			totalMaxUsers: number,
-
-			localAllUsers: number,
-			localMaxUsers: number,
-
-			operatorsOnline: number,
-			unknownConnections: number,
-			channelsFormed: number,
-		}
-	},
 	user: {
 		nick: string,
+		// Only "nick" is implemented.
 		username: string,
 		hostname: string,
 		realname: string,
@@ -55,6 +19,7 @@ let store = {
 				setBy: string,
 				setOn: moment,
 			},
+			// "modes" not yet implemented.
 			modes: { [mode]: value },
 			users: [
 				{
@@ -64,6 +29,7 @@ let store = {
 			],
 		},
 	],
+	// "users" not yet implemented.
 	users: [
 		{
 			nick: string,
