@@ -1,7 +1,7 @@
 {
   "name": "@rx-irc/client",
   "description": "A Node.js IRC client based on RxJS streams.",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "license": "MIT",
   "author": "Florian Mäder <florian@maederbiel.ch>",
   "homepage": "https://github.com/rx-irc/client",
